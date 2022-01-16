@@ -1,12 +1,22 @@
 from distutils.log import debug
-from flask import Flask
-import os
+from dotenv import load_dotenv
+from flask import Flask, render_template, jsonify, request, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
+
+from config import Config
+
+load_dotenv('./.flaskenv')
 
 app = Flask(__name__)
+app.config.from_object(Config)
+
+db = SQLAlchemy(app)
+
+
 
 @app.route('/')
 def index():
-    return "Hello World"
+    return "Hello Zahraan!"
 
 
 if __name__ == '__main__':
