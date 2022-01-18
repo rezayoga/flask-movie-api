@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from starter.app import app
+from flaskvuenginx.starter import app
 
 
 @dataclass
