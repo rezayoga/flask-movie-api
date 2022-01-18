@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from datetime import datetime
 from flaskvuenginx.starter import app
-
+import pathlib
+print(str(pathlib.Path().resolve()))
 
 @dataclass
 class Task(app.db.Model):
