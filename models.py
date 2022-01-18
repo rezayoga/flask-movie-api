@@ -1,19 +1,20 @@
 from dataclasses import dataclass
 from datetime import datetime
 #import app
-from app import db
+from flaskvuenginx import app
+
 @dataclass
-class Task(db.Model):
+class Task(app.db.Model):
 
     id: int
     title: str
     date: datetime
     completed: bool
 
-    id = db.Column(db.Integer(), primary_key=True)
-    title = db.Column(db.String(140))
-    date = db.Column(db.DateTime(), default=datetime.now())
-    completed = db.Column(db.Boolean(), default=False)
+    id = app.db.Column(app.db.Integer(), primary_key=True)
+    title = app.db.Column(app.db.String(140))
+    date = app.db.Column(app.db.DateTime(), default=datetime.now())
+    completed = app.db.Column(app.db.Boolean(), default=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
