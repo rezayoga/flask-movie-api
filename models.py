@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from datetime import datetime
-import app
-
+#import app
+from .app import db
 @dataclass
-class Task(app.db.Model):
+class Task(db.Model):
 
     id: int
     title: str
