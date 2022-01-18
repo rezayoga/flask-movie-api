@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-import starter.app as app
+from starter import app
 
 
 @dataclass
