@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
 #import app
-from app import app
 
 @dataclass
 class Task(app.db.Model):
