@@ -1,16 +1,16 @@
 from distutils.log import debug
-#from dotenv import load_dotenv
+from dotenv import load_dotenv
 from flask import Flask, render_template, jsonify, request, redirect, url_for
-#from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
-#from config import Config
+from config import Config
 
-#load_dotenv('./.flaskenv')
+load_dotenv('./.flaskenv')
 
 app = Flask(__name__)
-#app.config.from_object(Config)
+app.config.from_object(Config)
 
-#db = SQLAlchemy(app)
+db = SQLAlchemy(app)
 
 
 @app.route('/')
