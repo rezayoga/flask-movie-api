@@ -13,7 +13,6 @@ app.config.from_object(Config)
 
 db = SQLAlchemy(app)
 
-
 @app.route('/')
 def index():
     tasks = models.Task.query.all()
@@ -61,4 +60,4 @@ def complete_task():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')
