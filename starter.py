@@ -1,5 +1,4 @@
 from forms import TaskForm
-import models
 from dotenv import load_dotenv
 from flask import Flask, render_template, jsonify, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
@@ -11,15 +10,9 @@ load_dotenv('./.flaskenv')
 app = Flask(__name__)
 app.config.from_object(Config)
 
+
 db = SQLAlchemy(app)
-
-
-def create_app(object_name):
-    app = Flask(__name__)
-    #more setup here
-    return app
-
-
+import models
 @app.route('/')
 def index():
     tasks = models.Task.query.all()
