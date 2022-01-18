@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from app import app
+import app.app as app
 
 @dataclass
 class Task(app.db.Model):
