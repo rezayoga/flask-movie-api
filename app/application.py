@@ -16,7 +16,8 @@ def create_app(app_name="Flask Vue"):
     app.config.from_object(Config)
     db.init_app(app)
 
-    from . import routes
-    db.create_all()
+    with app.app_context():
+        from . import routes
+        db.create_all()
 
-    return app
+        return app
