@@ -1,4 +1,4 @@
-import models
+from models import db
 from forms import TaskForm
 from dotenv import load_dotenv
 from flask import Flask, render_template, jsonify, request, redirect, url_for
@@ -11,7 +11,7 @@ load_dotenv('./.flaskenv')
 app = Flask(__name__)
 app.config.from_object(Config)
 
-
+db.init_app(app)
 #db = SQLAlchemy(app)
 
 @app.route('/')
