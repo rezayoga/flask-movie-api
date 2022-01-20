@@ -75,6 +75,7 @@ class Movie(db.Model):
     directors: str
     actors: str
     year: str
+    billboard: str
     created_at: str
 
     id = db.Column(db.Integer, primary_key=True)
@@ -85,6 +86,7 @@ class Movie(db.Model):
     directors = db.Column(db.String(256), nullable=False)
     actors = db.Column(db.String(256), nullable=False)
     year = db.Column(db.String(4), nullable=False)
+    billboard = db.Column(db.String(256), nullable=True)
     created_at = db.Column(db.String(24))
 
     def __init__(self, *args, **kwargs):
@@ -103,13 +105,15 @@ def token_required(f):
             token = request.headers['x-access-token']
 
         if not token:
-            return jsonify({'message' : 'Token is missing!'}), 401
+            return jsonify({'message': 'Token is missing!'}), 401
 
-        try: 
-            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-            current_user = User.query.filter_by(public_id=data['public_id']).first()
+        try:
+            data = jwt.decode(
+                token, app.config['SECRET_KEY'], algorithms=["HS256"])
+            current_user = User.query.filter_by(
+                public_id=data['public_id']).first()
         except:
-            return jsonify({'message' : 'Token is invalid!'}), 401
+            return jsonify({'message': 'Token is invalid!'}), 401
 
         return f(current_user, *args, **kwargs)
 
@@ -226,17 +230,6 @@ def get_all_movies(current_user):
 
     output = []
 
-    '''
-    id: int
-    user_id: int
-    genre: str
-    title: str
-    directors: str
-    actors: str
-    year: str
-    created_at: str
-    '''
-
     for movie in movies:
         movie_data = {}
         movie_data['id'] = movie.id
@@ -246,6 +239,7 @@ def get_all_movies(current_user):
         movie_data['directors'] = movie.directors
         movie_data['actors'] = movie.actors
         movie_data['year'] = movie.year
+        movie_data['billboard'] = movie.billboard
         movie_data['created_at'] = movie.created_at
         output.append(movie_data)
 
@@ -268,6 +262,7 @@ def get_one_movie(current_user, movie_id):
     movie_data['directors'] = movie.directors
     movie_data['actors'] = movie.actors
     movie_data['year'] = movie.year
+    movie_data['billboard'] = movie.billboard
     movie_data['created_at'] = movie.created_at
 
     return jsonify(movie_data)
@@ -279,7 +274,7 @@ def create_movie(current_user):
     data = request.get_json()
 
     new_movie = Movie(user_id=current_user.id, genre=data['genre'], title=data['title'], directors=data['directors'],
-                      actors=data['actors'], year=data['year'], created_at=getCurrentDate(True))
+                      actors=data['actors'], year=data['year'], billboard=data['billboard'], created_at=getCurrentDate(True))
     db.session.add(new_movie)
     db.session.commit()
 
