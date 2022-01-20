@@ -223,7 +223,7 @@ def login():
         ) + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'])
 
         #return jsonify({'token': token.decode('UTF-8')})
-        return jsonify({'token': token.encode().decode('UTF-8')})
+        return jsonify({'token': str(token)})
     return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
 
 
