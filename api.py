@@ -278,7 +278,7 @@ def get_one_movie(current_user, movie_id):
 def create_movie(current_user):
     data = request.get_json()
 
-    new_movie = Movie(id=data['id'], user_id=current_user.id, genre=data['genre'], title=data['title'], directors=data['directors'],
+    new_movie = Movie(user_id=current_user.id, genre=data['genre'], title=data['title'], directors=data['directors'],
                       actors=data['actors'], year=data['year'], created_at=getCurrentDate(True))
     db.session.add(new_movie)
     db.session.commit()
