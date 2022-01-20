@@ -18,6 +18,7 @@ db = SQLAlchemy(app)
 
 load_dotenv('./.flaskenv')
 
+
 def getCurrentDate(withTime=False):
     month = ['Januari',
              'Februari',
@@ -62,6 +63,7 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User id: {self.id} - {self.username}>'
+
 
 @dataclass
 class Movie(db.Model):
@@ -114,6 +116,24 @@ def token_required(f):
         return f(current_user, *args, **kwargs)
 
     return decorated
+
+
+@app.route('/login')
+def login():
+    auth = request.authorization
+
+    if not auth or not auth.username or not auth.password:
+        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+
+    user = User.query.filter_by(username=auth.username).first()
+
+    if not user:
+        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
+
+    if check_password_hash(user.password, auth.password):
+        token = jwt.encode({'public_id': user.public_id, 'exp': datetime.datetime.now() + datetime.timedelta(minutes=120)}, app.config['SECRET_KEY'])
+        return jsonify({'token': token})
+    return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
 
 
 @app.route('/user', methods=['GET'])
@@ -204,26 +224,6 @@ def delete_user(current_user, public_id):
     db.session.commit()
 
     return jsonify({'message': 'The user has been deleted!'})
-
-
-@app.route('/login')
-def login():
-    auth = request.authorization
-
-    if not auth or not auth.username or not auth.password:
-        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
-
-    user = User.query.filter_by(username=auth.username).first()
-
-    if not user:
-        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
-
-    if check_password_hash(user.password, auth.password):
-        token = jwt.encode({'public_id': user.public_id, 'exp': datetime.datetime.now(
-        ) + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'])
-
-        return jsonify({'token': token.decode('UTF-8')})
-    return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
 
 
 @app.route('/movie', methods=['GET'])
