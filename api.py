@@ -6,7 +6,7 @@ import jwt
 import datetime
 from functools import wraps
 from dotenv import load_dotenv
-
+from dataclasses import dataclass
 from config import Config
 
 load_dotenv('./.flaskenv')
@@ -18,18 +18,53 @@ db = SQLAlchemy(app)
 
 
 class User(db.Model):
+    __tablename__ = 'tb_users'
+
+    id: int
+    username: str
+    password: str
+    fullname: str
+    created_at: str
+
     id = db.Column(db.Integer, primary_key=True)
-    public_id = db.Column(db.String(50), unique=True)
-    name = db.Column(db.String(50))
-    password = db.Column(db.String(80))
-    admin = db.Column(db.Boolean)
+    username = db.Column(db.String(128))
+    password = db.Column(db.String(256))
+    fullname = db.Column(db.String(128))
+    created_at = db.Column(db.String(24))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def __repr__(self):
+        return f'<User id: {self.id} - {self.username}>'
 
 
-class Todo(db.Model):
+class Movie(db.Model):
+    __tablename__ = 'tb_movies'
+
+    id: int
+    user_id: int
+    genre: str
+    title: str
+    directors: str
+    actors: str
+    year: str
+    created_at: str
+
     id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.String(50))
-    complete = db.Column(db.Boolean)
     user_id = db.Column(db.Integer)
+    genre = db.Column(db.String(64))
+    title = db.Column(db.String(256))
+    directors = db.Column(db.String(256))
+    actors = db.Column(db.String(256))
+    year = db.Column(db.String(4))
+    created_at = db.Column(db.String(24))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def __repr__(self):
+        return f'<Movie id: {self.id} - {self.title} - {self.genre} - {self.year}>'
 
 
 def token_required(f):
