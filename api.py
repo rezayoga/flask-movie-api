@@ -138,10 +138,6 @@ def login():
 @app.route('/user', methods=['GET'])
 @token_required
 def get_all_users(current_user):
-
-    if not current_user.admin:
-        return jsonify({'message': 'Cannot perform that function!'})
-
     users = User.query.all()
 
     output = []
@@ -179,8 +175,6 @@ def get_one_user(current_user, public_id):
 @app.route('/user', methods=['POST'])
 @token_required
 def create_user(current_user):
-    if not current_user.admin:
-        return jsonify({'message': 'Cannot perform that function!'})
 
     data = request.get_json()
 
