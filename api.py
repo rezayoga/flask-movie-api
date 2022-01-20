@@ -13,7 +13,6 @@ import time
 
 app = Flask(__name__)
 app.config.from_object(Config)
-app.config['SECRET_KEY'] = 's3cre7key'
 db = SQLAlchemy(app)
 
 load_dotenv('./.flaskenv')
@@ -107,7 +106,7 @@ def token_required(f):
             return jsonify({'message' : 'Token is missing!'}), 401
 
         try: 
-            data = jwt.decode(token, app.config['SECRET_KEY'])
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
             current_user = User.query.filter_by(public_id=data['public_id']).first()
         except:
             return jsonify({'message' : 'Token is invalid!'}), 401
@@ -130,7 +129,7 @@ def login():
         return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
 
     if check_password_hash(user.password, auth.password):
-        token = jwt.encode({'public_id': user.public_id, 'exp': datetime.datetime.now() + datetime.timedelta(minutes=120)}, app.config['SECRET_KEY'])
+        token = jwt.encode({'public_id': user.public_id, 'exp': datetime.datetime.now() + datetime.timedelta(minutes=120)}, app.config['SECRET_KEY'], algorithms=["HS256"])
         return jsonify({'token': token})
     return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
 
