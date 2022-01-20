@@ -13,7 +13,7 @@ import time
 
 app = Flask(__name__)
 app.config.from_object(Config)
-
+app.config['SECRET_KEY'] = 's3cre7key'
 db = SQLAlchemy(app)
 
 load_dotenv('./.flaskenv')
@@ -104,14 +104,13 @@ def token_required(f):
             token = request.headers['x-access-token']
 
         if not token:
-            return jsonify({'message': 'Token is missing!'}), 401
+            return jsonify({'message' : 'Token is missing!'}), 401
 
-        try:
+        try: 
             data = jwt.decode(token, app.config['SECRET_KEY'])
-            current_user = User.query.filter_by(
-                public_id=data['public_id']).first()
+            current_user = User.query.filter_by(public_id=data['public_id']).first()
         except:
-            return jsonify({'message': 'Token is invalid!'}), 401
+            return jsonify({'message' : 'Token is invalid!'}), 401
 
         return f(current_user, *args, **kwargs)
 
