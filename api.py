@@ -8,26 +8,50 @@ from functools import wraps
 from dotenv import load_dotenv
 from dataclasses import dataclass
 from config import Config
+import time
 
-load_dotenv('./.flaskenv')
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
 db = SQLAlchemy(app)
 
+load_dotenv('./.flaskenv')
 
+def getCurrentDate(withTime=False):
+    month = ['Januari',
+             'Februari',
+             'Maret',
+             'April',
+             'Mei',
+             'Juni',
+             'Juli',
+             'Agustus',
+             'September',
+             'Oktober',
+             'November',
+             'Desember'
+             ]
+
+    if (withTime):
+        return '%s-%s-%s %s:%s:%s' % (time.strftime('%Y'), time.strftime('%m'), time.strftime('%d'), time.strftime('%H'), time.strftime('%M'), time.strftime('%S'))
+    return '%s-%s-%s' % (time.strftime('%d'), month[int(time.strftime('%m')) - 1].upper(), now.year)
+
+
+@dataclass
 class User(db.Model):
     __tablename__ = 'tb_users'
 
     id: int
+    public_id: str
     username: str
     password: str
     fullname: str
     created_at: str
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(128), nullable=False)
+    public_id = db.Column(db.String(50), unique=True)
+    username = db.Column(db.String(128), unique=True, nullable=False)
     password = db.Column(db.String(256), nullable=False)
     fullname = db.Column(db.String(128), nullable=False)
     created_at = db.Column(db.String(24), nullable=False)
@@ -39,7 +63,7 @@ class User(db.Model):
     def __repr__(self):
         return f'<User id: {self.id} - {self.username}>'
 
-
+@dataclass
 class Movie(db.Model):
     __tablename__ = 'tb_movies'
 
@@ -53,7 +77,8 @@ class Movie(db.Model):
     created_at: str
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('tb_users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey(
+        'tb_users.id'), nullable=False)
     genre = db.Column(db.String(64), nullable=False)
     title = db.Column(db.String(256), nullable=False)
     directors = db.Column(db.String(256), nullable=False)
@@ -105,9 +130,10 @@ def get_all_users(current_user):
     for user in users:
         user_data = {}
         user_data['public_id'] = user.public_id
-        user_data['name'] = user.name
+        user_data['username'] = user.username
         user_data['password'] = user.password
-        user_data['admin'] = user.admin
+        user_data['fullname'] = user.fullname
+        user_data['created_at'] = user.created_at
         output.append(user_data)
 
     return jsonify({'users': output})
@@ -116,10 +142,6 @@ def get_all_users(current_user):
 @app.route('/user/<public_id>', methods=['GET'])
 @token_required
 def get_one_user(current_user, public_id):
-
-    if not current_user.admin:
-        return jsonify({'message': 'Cannot perform that function!'})
-
     user = User.query.filter_by(public_id=public_id).first()
 
     if not user:
@@ -127,9 +149,10 @@ def get_one_user(current_user, public_id):
 
     user_data = {}
     user_data['public_id'] = user.public_id
-    user_data['name'] = user.name
+    user_data['username'] = user.username
     user_data['password'] = user.password
-    user_data['admin'] = user.admin
+    user_data['fullname'] = user.fullname
+    user_data['created_at'] = user.created_at
 
     return jsonify({'user': user_data})
 
@@ -144,8 +167,8 @@ def create_user(current_user):
 
     hashed_password = generate_password_hash(data['password'], method='sha256')
 
-    new_user = User(public_id=str(uuid.uuid4()),
-                    name=data['name'], password=hashed_password, admin=False)
+    new_user = User(public_id=str(uuid.uuid4()), name=data['username'], password=hashed_password,
+                    fullname=data['fullname'], created_at=getCurrentDate(True))
     db.session.add(new_user)
     db.session.commit()
 
@@ -155,26 +178,23 @@ def create_user(current_user):
 @app.route('/user/<public_id>', methods=['PUT'])
 @token_required
 def promote_user(current_user, public_id):
-    if not current_user.admin:
-        return jsonify({'message': 'Cannot perform that function!'})
-
     user = User.query.filter_by(public_id=public_id).first()
 
     if not user:
         return jsonify({'message': 'No user found!'})
 
-    user.admin = True
+    data = request.get_json()
+    hashed_password = generate_password_hash(data['password'], method='sha256')
+    user.password = hashed_password
+    user.fullname = data['fullname']
     db.session.commit()
 
-    return jsonify({'message': 'The user has been promoted!'})
+    return jsonify({'message': 'The user has been updated!'})
 
 
 @app.route('/user/<public_id>', methods=['DELETE'])
 @token_required
 def delete_user(current_user, public_id):
-    if not current_user.admin:
-        return jsonify({'message': 'Cannot perform that function!'})
-
     user = User.query.filter_by(public_id=public_id).first()
 
     if not user:
@@ -193,7 +213,7 @@ def login():
     if not auth or not auth.username or not auth.password:
         return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
 
-    user = User.query.filter_by(name=auth.username).first()
+    user = User.query.filter_by(username=auth.username).first()
 
     if not user:
         return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
@@ -207,77 +227,99 @@ def login():
     return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
 
 
-@app.route('/todo', methods=['GET'])
+@app.route('/movie', methods=['GET'])
 @token_required
-def get_all_todos(current_user):
-    todos = Todo.query.filter_by(user_id=current_user.id).all()
+def get_all_movies(current_user):
+    movies = Movie.query.filter_by(user_id=current_user.id).all()
 
     output = []
 
-    for todo in todos:
-        todo_data = {}
-        todo_data['id'] = todo.id
-        todo_data['text'] = todo.text
-        todo_data['complete'] = todo.complete
-        output.append(todo_data)
+    '''
+    id: int
+    user_id: int
+    genre: str
+    title: str
+    directors: str
+    actors: str
+    year: str
+    created_at: str
+    '''
 
-    return jsonify({'todos': output})
+    for movie in movies:
+        movie_data = {}
+        movie_data['id'] = movie.id
+        movie_data['user_id'] = movie.user_id
+        movie_data['genre'] = movie.genre
+        movie_data['title'] = movie.title
+        movie_data['directors'] = movie.directors
+        movie_data['actors'] = movie.actors
+        movie_data['year'] = movie.year
+        movie_data['created_at'] = movie.created_at
+        output.append(movie_data)
+
+    return jsonify({'movies': output})
 
 
-@app.route('/todo/<todo_id>', methods=['GET'])
+@app.route('/movie/<movie_id>', methods=['GET'])
 @token_required
-def get_one_todo(current_user, todo_id):
-    todo = Todo.query.filter_by(id=todo_id, user_id=current_user.id).first()
+def get_one_movie(current_user, movie_id):
+    movie = Movie.query.filter_by(id=movie_id, user_id=current_user.id).first()
 
-    if not todo:
-        return jsonify({'message': 'No todo found!'})
+    if not movie:
+        return jsonify({'message': 'No movie found!'})
 
-    todo_data = {}
-    todo_data['id'] = todo.id
-    todo_data['text'] = todo.text
-    todo_data['complete'] = todo.complete
+    movie_data = {}
+    movie_data['id'] = movie.id
+    movie_data['user_id'] = movie.user_id
+    movie_data['genre'] = movie.genre
+    movie_data['title'] = movie.title
+    movie_data['directors'] = movie.directors
+    movie_data['actors'] = movie.actors
+    movie_data['year'] = movie.year
+    movie_data['created_at'] = movie.created_at
 
-    return jsonify(todo_data)
+    return jsonify(movie_data)
 
 
-@app.route('/todo', methods=['POST'])
+@app.route('/movie', methods=['POST'])
 @token_required
-def create_todo(current_user):
+def create_movie(current_user):
     data = request.get_json()
 
-    new_todo = Todo(text=data['text'], complete=False, user_id=current_user.id)
-    db.session.add(new_todo)
+    new_movie = Movie(id=data['id'], user_id=current_user.id, genre=data['genre'], title=data['title'], directors=data['directors'],
+                      actors=data['actors'], year=data['year'], created_at=getCurrentDate(True))
+    db.session.add(new_movie)
     db.session.commit()
 
-    return jsonify({'message': "Todo created!"})
+    return jsonify({'message': "Movie created!"})
 
 
-@app.route('/todo/<todo_id>', methods=['PUT'])
+@app.route('/movie/<movie_id>', methods=['PUT'])
 @token_required
-def complete_todo(current_user, todo_id):
-    todo = Todo.query.filter_by(id=todo_id, user_id=current_user.id).first()
+def complete_movie(current_user, movie_id):
+    movie = Movie.query.filter_by(id=movie_id, user_id=current_user.id).first()
 
-    if not todo:
-        return jsonify({'message': 'No todo found!'})
+    if not movie:
+        return jsonify({'message': 'No movie found!'})
 
-    todo.complete = True
+    movie.complete = True
     db.session.commit()
 
-    return jsonify({'message': 'Todo item has been completed!'})
+    return jsonify({'message': 'Movie item has been completed!'})
 
 
-@app.route('/todo/<todo_id>', methods=['DELETE'])
+@app.route('/movie/<movie_id>', methods=['DELETE'])
 @token_required
-def delete_todo(current_user, todo_id):
-    todo = Todo.query.filter_by(id=todo_id, user_id=current_user.id).first()
+def delete_movie(current_user, movie_id):
+    movie = Movie.query.filter_by(id=movie_id, user_id=current_user.id).first()
 
-    if not todo:
-        return jsonify({'message': 'No todo found!'})
+    if not movie:
+        return jsonify({'message': 'No movie found!'})
 
-    db.session.delete(todo)
+    db.session.delete(movie)
     db.session.commit()
 
-    return jsonify({'message': 'Todo item deleted!'})
+    return jsonify({'message': 'Movie item deleted!'})
 
 
 if __name__ == '__main__':
