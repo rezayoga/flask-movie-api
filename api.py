@@ -180,7 +180,7 @@ def create_user(current_user):
 
     hashed_password = generate_password_hash(data['password'], method='sha256')
 
-    new_user = User(public_id=str(uuid.uuid4()), name=data['username'], password=hashed_password,
+    new_user = User(public_id=str(uuid.uuid4()), username=data['username'], password=hashed_password,
                     fullname=data['fullname'], created_at=getCurrentDate(True))
     db.session.add(new_user)
     db.session.commit()
