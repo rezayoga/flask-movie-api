@@ -27,10 +27,11 @@ class User(db.Model):
     created_at: str
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(128))
-    password = db.Column(db.String(256))
-    fullname = db.Column(db.String(128))
-    created_at = db.Column(db.String(24))
+    username = db.Column(db.String(128), nullable=False)
+    password = db.Column(db.String(256), nullable=False)
+    fullname = db.Column(db.String(128), nullable=False)
+    created_at = db.Column(db.String(24), nullable=False)
+    movie = db.relationship('Movie', backref='user', lazy=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -52,12 +53,12 @@ class Movie(db.Model):
     created_at: str
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer)
-    genre = db.Column(db.String(64))
-    title = db.Column(db.String(256))
-    directors = db.Column(db.String(256))
-    actors = db.Column(db.String(256))
-    year = db.Column(db.String(4))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    genre = db.Column(db.String(64), nullable=False)
+    title = db.Column(db.String(256), nullable=False)
+    directors = db.Column(db.String(256), nullable=False)
+    actors = db.Column(db.String(256), nullable=False)
+    year = db.Column(db.String(4), nullable=False)
     created_at = db.Column(db.String(24))
 
     def __init__(self, *args, **kwargs):
