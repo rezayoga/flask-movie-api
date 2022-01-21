@@ -333,9 +333,9 @@ def delete_movie(current_user, movie_id):
 
 @app.route('/documentation')
 def documentation():
-    #return auto.html(title='Movie App API Documentation',
-    #                 author='Reza Yogaswara')
-    return Response(str(auto.generate()), mimetype='application/json')
+    return auto.html(title='Movie App API Documentation',
+                     author='Reza Yogaswara')
+    #return Response(str(auto.generate()), mimetype='application/json')
 
 if __name__ == '__main__':
     app.run(debug=True)
