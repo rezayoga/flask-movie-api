@@ -167,6 +167,7 @@ def get_all_users(current_user):
 @auto.doc()
 @token_required
 def get_one_user(current_user, public_id):
+    """GET User by public_id"""
     user = User.query.filter_by(public_id=public_id).first()
 
     if not user:
@@ -186,7 +187,7 @@ def get_one_user(current_user, public_id):
 @auto.doc()
 @token_required
 def create_user(current_user):
-
+    """POST new User"""
     data = request.get_json()
 
     hashed_password = generate_password_hash(data['password'], method='sha256')
@@ -203,6 +204,7 @@ def create_user(current_user):
 @auto.doc()
 @token_required
 def update_user(current_user, public_id):
+    """PUT update User by public_id"""
     user = User.query.filter_by(public_id=public_id).first()
 
     if not user:
@@ -221,6 +223,7 @@ def update_user(current_user, public_id):
 @auto.doc()
 @token_required
 def delete_user(current_user, public_id):
+    """DELETE User by public_id"""
     user = User.query.filter_by(public_id=public_id).first()
 
     if not user:
@@ -236,6 +239,7 @@ def delete_user(current_user, public_id):
 @auto.doc()
 @token_required
 def get_all_movies(current_user):
+    """GET Movie list"""
     movies = Movie.query.filter_by(user_id=current_user.id).all()
 
     output = []
@@ -260,6 +264,7 @@ def get_all_movies(current_user):
 @auto.doc()
 @token_required
 def get_one_movie(current_user, movie_id):
+    """GET Movie by movie_id"""
     movie = Movie.query.filter_by(id=movie_id, user_id=current_user.id).first()
 
     if not movie:
@@ -283,6 +288,7 @@ def get_one_movie(current_user, movie_id):
 @auto.doc()
 @token_required
 def create_movie(current_user):
+    """POST new Movie"""
     data = request.get_json()
 
     new_movie = Movie(user_id=current_user.id, genre=data['genre'], title=data['title'], directors=data['directors'],
@@ -297,6 +303,7 @@ def create_movie(current_user):
 @auto.doc()
 @token_required
 def complete_movie(current_user, movie_id):
+    """PUT update Movie by movie_id"""
     movie = Movie.query.filter_by(id=movie_id, user_id=current_user.id).first()
 
     if not movie:
@@ -318,6 +325,7 @@ def complete_movie(current_user, movie_id):
 @auto.doc()
 @token_required
 def delete_movie(current_user, movie_id):
+    """DELETE Movie by movie_id"""
     movie = Movie.query.filter_by(id=movie_id, user_id=current_user.id).first()
 
     if not movie:
