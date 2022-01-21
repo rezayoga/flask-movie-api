@@ -140,9 +140,11 @@ def login():
     return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
 
 
+# GET User list
 @app.route('/user', methods=['GET'])
 @token_required
 def get_all_users(current_user):
+    """GET User list"""
     users = User.query.all()
 
     output = []
