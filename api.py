@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from config import Config
 import time
 from flask_autodoc.autodoc import Autodoc
+import json
 
 
 app = Flask(__name__)
@@ -334,7 +335,7 @@ def delete_movie(current_user, movie_id):
 def documentation():
     #return auto.html(title='Movie App API Documentation',
     #                 author='Reza Yogaswara')
-    return str(auto.generate())
+    return json.dumps(str(auto.generate()), sort_keys = True, indent = 4, separators = (',', ': '))
 
 if __name__ == '__main__':
     app.run(debug=True)
