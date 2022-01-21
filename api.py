@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, make_response, Response
+from flask import Flask, request, jsonify, make_response, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -48,6 +48,10 @@ def token_required(f):
 
     return decorated
 
+
+@app.route('/')
+def login():
+    redirect(url_for('/documentation'))
 
 @app.route('/login')
 def login():
