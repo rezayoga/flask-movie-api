@@ -20,6 +20,7 @@ db = SQLAlchemy(app)
 load_dotenv('./.flaskenv')
 auto = Autodoc(app)
 
+
 def getCurrentDate(withTime=False):
     month = ['Januari',
              'Februari',
@@ -336,14 +337,13 @@ def delete_movie(current_user, movie_id):
 
     return jsonify({'message': 'Movie item deleted!'})
 
-# This route generates HTML of documentation
-
 
 @app.route('/documentation')
 def documentation():
     return auto.html(title='Movie App API Documentation',
                      author='Reza Yogaswara')
-    #return Response(str(auto.generate()), mimetype='application/json')
+    # return Response(str(auto.generate()), mimetype='application/json')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
