@@ -10,7 +10,6 @@ from dataclasses import dataclass
 from config import Config
 import time
 from flask_autodoc.autodoc import Autodoc
-import json
 
 app = Flask(__name__)
 app.config.from_object(Config)
