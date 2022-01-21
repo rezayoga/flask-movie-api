@@ -163,6 +163,7 @@ def get_all_users(current_user):
 
 
 @app.route('/user/<public_id>', methods=['GET'])
+@auto.doc()
 @token_required
 def get_one_user(current_user, public_id):
     user = User.query.filter_by(public_id=public_id).first()
@@ -181,6 +182,7 @@ def get_one_user(current_user, public_id):
 
 
 @app.route('/user', methods=['POST'])
+@auto.doc()
 @token_required
 def create_user(current_user):
 
@@ -197,6 +199,7 @@ def create_user(current_user):
 
 
 @app.route('/user/<public_id>', methods=['PUT'])
+@auto.doc()
 @token_required
 def promote_user(current_user, public_id):
     user = User.query.filter_by(public_id=public_id).first()
@@ -214,6 +217,7 @@ def promote_user(current_user, public_id):
 
 
 @app.route('/user/<public_id>', methods=['DELETE'])
+@auto.doc()
 @token_required
 def delete_user(current_user, public_id):
     user = User.query.filter_by(public_id=public_id).first()
@@ -228,6 +232,7 @@ def delete_user(current_user, public_id):
 
 
 @app.route('/movie', methods=['GET'])
+@auto.doc()
 @token_required
 def get_all_movies(current_user):
     movies = Movie.query.filter_by(user_id=current_user.id).all()
@@ -251,6 +256,7 @@ def get_all_movies(current_user):
 
 
 @app.route('/movie/<movie_id>', methods=['GET'])
+@auto.doc()
 @token_required
 def get_one_movie(current_user, movie_id):
     movie = Movie.query.filter_by(id=movie_id, user_id=current_user.id).first()
@@ -273,6 +279,7 @@ def get_one_movie(current_user, movie_id):
 
 
 @app.route('/movie', methods=['POST'])
+@auto.doc()
 @token_required
 def create_movie(current_user):
     data = request.get_json()
@@ -286,6 +293,7 @@ def create_movie(current_user):
 
 
 @app.route('/movie/<movie_id>', methods=['PUT'])
+@auto.doc()
 @token_required
 def complete_movie(current_user, movie_id):
     movie = Movie.query.filter_by(id=movie_id, user_id=current_user.id).first()
@@ -306,6 +314,7 @@ def complete_movie(current_user, movie_id):
 
 
 @app.route('/movie/<movie_id>', methods=['DELETE'])
+@auto.doc()
 @token_required
 def delete_movie(current_user, movie_id):
     movie = Movie.query.filter_by(id=movie_id, user_id=current_user.id).first()
@@ -321,7 +330,9 @@ def delete_movie(current_user, movie_id):
 # This route generates HTML of documentation
 @app.route('/documentation')
 def documentation():
-    return auto.html()
+    return auto.html(template='custom_autodoc.html', 
+                     title='Movie App API Documentation',
+                     author='Reza Yogaswara',)
 
 if __name__ == '__main__':
     app.run(debug=True)
