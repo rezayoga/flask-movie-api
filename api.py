@@ -53,6 +53,7 @@ def token_required(f):
 def index():
     return redirect(url_for('documentation'))
 
+
 @app.route('/login')
 @auto.doc()
 def login():
@@ -270,13 +271,6 @@ def delete_movie(current_user, movie_id):
     return jsonify({'message': 'Movie item deleted!'})
 
 
-@app.route('/documentation')
-def documentation():
-    return auto.html(title='Movie App REST API Reference - Author: Reza Yogaswara',
-                     author='Reza Yogaswara')
-    # return Response(str(auto.generate()), mimetype='application/json')
-
-
 def getCurrentDate(withTime=False):
     month = ['Januari',
              'Februari',
@@ -353,6 +347,14 @@ class Movie(db.Model):
 
     def __repr__(self):
         return f'<Movie id: {self.id} - {self.title} - {self.genre} - {self.year}>'
+
+
+@app.route('/documentation')
+def documentation():
+    return auto.html(title='Movie App REST API Reference - Author: Reza Yogaswara',
+                     author='Reza Yogaswara')
+    # return Response(str(auto.generate()), mimetype='application/json')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
