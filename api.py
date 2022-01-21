@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response, Response
 from flask_sqlalchemy import SQLAlchemy
 import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -202,7 +202,7 @@ def create_user(current_user):
 @app.route('/user/<public_id>', methods=['PUT'])
 @auto.doc()
 @token_required
-def promote_user(current_user, public_id):
+def update_user(current_user, public_id):
     user = User.query.filter_by(public_id=public_id).first()
 
     if not user:
@@ -335,7 +335,7 @@ def delete_movie(current_user, movie_id):
 def documentation():
     #return auto.html(title='Movie App API Documentation',
     #                 author='Reza Yogaswara')
-    return json.dumps(str(auto.generate()), sort_keys = True, indent = 4, separators = (',', ': '))
+    return Response(json.dumps(str(auto.generate()), sort_keys = True, indent = 4, separators = (',', ': ')), mimetype='application/json')
 
 if __name__ == '__main__':
     app.run(debug=True)
