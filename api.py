@@ -272,7 +272,7 @@ def delete_movie(current_user, movie_id):
 
 @app.route('/documentation')
 def documentation():
-    return auto.html(title='Movie App REST API Reference',
+    return auto.html(title='Movie App REST API Reference<br /><small>Author: Reza Yogaswara</small>',
                      author='Reza Yogaswara')
     # return Response(str(auto.generate()), mimetype='application/json')
 
