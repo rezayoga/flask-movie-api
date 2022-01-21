@@ -330,8 +330,7 @@ def delete_movie(current_user, movie_id):
 # This route generates HTML of documentation
 @app.route('/documentation')
 def documentation():
-    return auto.html(template='custom_autodoc.html', 
-                     title='Movie App API Documentation',
+    return auto.html(title='Movie App API Documentation',
                      author='Reza Yogaswara',)
 
 if __name__ == '__main__':
