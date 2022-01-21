@@ -354,6 +354,5 @@ class Movie(db.Model):
     def __repr__(self):
         return f'<Movie id: {self.id} - {self.title} - {self.genre} - {self.year}>'
 
-
 if __name__ == '__main__':
     app.run(debug=True)
