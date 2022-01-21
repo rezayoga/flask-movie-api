@@ -1,2 +1,2 @@
-# flask-vue-nginx
-Flask - Vue.js - NginX
+# flask-moview-api
+flask REST API for Movie App
