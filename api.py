@@ -50,8 +50,8 @@ def token_required(f):
 
 
 @app.route('/')
-def login():
-    redirect(url_for('/documentation'))
+def index():
+    return redirect(url_for('/documentation'))
 
 @app.route('/login')
 def login():
