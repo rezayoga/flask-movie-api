@@ -18,7 +18,6 @@ db = SQLAlchemy(app)
 load_dotenv('./.flaskenv')
 auto = Autodoc(app)
 
-
 def getCurrentDate(withTime=False):
     month = ['Januari',
              'Februari',
