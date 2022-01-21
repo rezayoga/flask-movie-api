@@ -11,89 +11,18 @@ from config import Config
 import time
 from flask_autodoc.autodoc import Autodoc
 
+"""Flask RESTful API with JWT
+
+Author: Reza Yogaswara - https://me.rezayogaswara.com
+Endpoint: http://movieapi.rezayogaswara.com
+"""
+
 app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 
 load_dotenv('./.flaskenv')
 auto = Autodoc(app)
-
-def getCurrentDate(withTime=False):
-    month = ['Januari',
-             'Februari',
-             'Maret',
-             'April',
-             'Mei',
-             'Juni',
-             'Juli',
-             'Agustus',
-             'September',
-             'Oktober',
-             'November',
-             'Desember'
-             ]
-
-    if (withTime):
-        return '%s-%s-%s %s:%s:%s' % (time.strftime('%Y'), time.strftime('%m'), time.strftime('%d'), time.strftime('%H'), time.strftime('%M'), time.strftime('%S'))
-    return '%s-%s-%s' % (time.strftime('%d'), month[int(time.strftime('%m')) - 1].upper(), now.year)
-
-
-@dataclass
-class User(db.Model):
-    __tablename__ = 'tb_users'
-
-    id: int
-    public_id: str
-    username: str
-    password: str
-    fullname: str
-    created_at: str
-
-    id = db.Column(db.Integer, primary_key=True)
-    public_id = db.Column(db.String(50), unique=True)
-    username = db.Column(db.String(128), unique=True, nullable=False)
-    password = db.Column(db.String(256), nullable=False)
-    fullname = db.Column(db.String(128), nullable=False)
-    created_at = db.Column(db.String(24), nullable=False)
-    movie = db.relationship('Movie', backref='user', lazy=True)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def __repr__(self):
-        return f'<User id: {self.id} - {self.username}>'
-
-
-@dataclass
-class Movie(db.Model):
-    __tablename__ = 'tb_movies'
-
-    id: int
-    user_id: int
-    genre: str
-    title: str
-    directors: str
-    actors: str
-    year: str
-    billboard: str
-    created_at: str
-
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey(
-        'tb_users.id'), nullable=False)
-    genre = db.Column(db.String(64), nullable=False)
-    title = db.Column(db.String(256), nullable=False)
-    directors = db.Column(db.String(256), nullable=False)
-    actors = db.Column(db.String(256), nullable=False)
-    year = db.Column(db.String(4), nullable=False)
-    billboard = db.Column(db.String(256), nullable=True)
-    created_at = db.Column(db.String(24))
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def __repr__(self):
-        return f'<Movie id: {self.id} - {self.title} - {self.genre} - {self.year}>'
 
 
 def token_required(f):
@@ -300,7 +229,7 @@ def create_movie(current_user):
 @app.route('/movie/<movie_id>', methods=['PUT'])
 @auto.doc()
 @token_required
-def complete_movie(current_user, movie_id):
+def update_movie(current_user, movie_id):
     """PUT update Movie by movie_id"""
     movie = Movie.query.filter_by(id=movie_id, user_id=current_user.id).first()
 
@@ -341,6 +270,83 @@ def documentation():
                      author='Reza Yogaswara')
     # return Response(str(auto.generate()), mimetype='application/json')
 
+
+def getCurrentDate(withTime=False):
+    month = ['Januari',
+             'Februari',
+             'Maret',
+             'April',
+             'Mei',
+             'Juni',
+             'Juli',
+             'Agustus',
+             'September',
+             'Oktober',
+             'November',
+             'Desember'
+             ]
+
+    if (withTime):
+        return '%s-%s-%s %s:%s:%s' % (time.strftime('%Y'), time.strftime('%m'), time.strftime('%d'), time.strftime('%H'), time.strftime('%M'), time.strftime('%S'))
+    return '%s-%s-%s' % (time.strftime('%d'), month[int(time.strftime('%m')) - 1].upper(), now.year)
+
+
+@dataclass
+class User(db.Model):
+    __tablename__ = 'tb_users'
+
+    id: int
+    public_id: str
+    username: str
+    password: str
+    fullname: str
+    created_at: str
+
+    id = db.Column(db.Integer, primary_key=True)
+    public_id = db.Column(db.String(50), unique=True)
+    username = db.Column(db.String(128), unique=True, nullable=False)
+    password = db.Column(db.String(256), nullable=False)
+    fullname = db.Column(db.String(128), nullable=False)
+    created_at = db.Column(db.String(24), nullable=False)
+    movie = db.relationship('Movie', backref='user', lazy=True)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def __repr__(self):
+        return f'<User id: {self.id} - {self.username}>'
+
+
+@dataclass
+class Movie(db.Model):
+    __tablename__ = 'tb_movies'
+
+    id: int
+    user_id: int
+    genre: str
+    title: str
+    directors: str
+    actors: str
+    year: str
+    billboard: str
+    created_at: str
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey(
+        'tb_users.id'), nullable=False)
+    genre = db.Column(db.String(64), nullable=False)
+    title = db.Column(db.String(256), nullable=False)
+    directors = db.Column(db.String(256), nullable=False)
+    actors = db.Column(db.String(256), nullable=False)
+    year = db.Column(db.String(4), nullable=False)
+    billboard = db.Column(db.String(256), nullable=True)
+    created_at = db.Column(db.String(24))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def __repr__(self):
+        return f'<Movie id: {self.id} - {self.title} - {self.genre} - {self.year}>'
 
 
 if __name__ == '__main__':
