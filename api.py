@@ -54,7 +54,9 @@ def index():
     return redirect(url_for('documentation'))
 
 @app.route('/login')
+@auto.doc()
 def login():
+    """Authentication"""
     auth = request.authorization
 
     if not auth or not auth.username or not auth.password:
@@ -270,7 +272,7 @@ def delete_movie(current_user, movie_id):
 
 @app.route('/documentation')
 def documentation():
-    return auto.html(title='Movie App API Documentation',
+    return auto.html(title='Movie App REST API Reference',
                      author='Reza Yogaswara')
     # return Response(str(auto.generate()), mimetype='application/json')
 
