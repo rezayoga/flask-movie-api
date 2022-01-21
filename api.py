@@ -316,10 +316,9 @@ def delete_movie(current_user, movie_id):
     return jsonify({'message': 'Movie item deleted!'})
 
 # This route generates HTML of documentation
-@app.route('/doc')
+@app.route('/documentation')
 def documentation():
-    return auto.html(title='Movie API App',
-                     author='Reza Yogaswara',)
+    return auto.html()
 
 if __name__ == '__main__':
     app.run(debug=True)
