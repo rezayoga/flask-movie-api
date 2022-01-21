@@ -289,7 +289,13 @@ def complete_movie(current_user, movie_id):
     if not movie:
         return jsonify({'message': 'No movie found!'})
 
-    movie.complete = True
+    data = request.get_json()
+    movie.genre = data['genre']
+    movie.title = data['title']
+    movie.directors = data['directors']
+    movie.actors = data['actors']
+    movie.year = data['year']
+    movie.billboard = data['billboard']
     db.session.commit()
 
     return jsonify({'message': 'Movie item has been completed!'})
