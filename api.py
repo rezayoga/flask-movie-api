@@ -11,7 +11,7 @@ from config import Config
 import time
 from flask_autodoc.autodoc import Autodoc
 
-"""Flask RESTful API with JWT
+"""Flask REST API with JWT
 
 Author: Reza Yogaswara - https://me.rezayogaswara.com
 Endpoint: http://movieapi.rezayogaswara.com
