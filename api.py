@@ -333,7 +333,7 @@ def documentation():
     return auto.html(title='Movie App API Documentation',
                      author='Reza Yogaswara')
 
-@app.route('/doc.raw')
+@app.route('/rawdoc')
 def documentation():
     return str(auto.generate())
 
