@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from dataclasses import dataclass
 from config import Config
 import time
+from flask_autodoc.autodoc import Autodoc
 
 
 app = Flask(__name__)
@@ -16,7 +17,7 @@ app.config.from_object(Config)
 db = SQLAlchemy(app)
 
 load_dotenv('./.flaskenv')
-
+auto = Autodoc(app)
 
 def getCurrentDate(withTime=False):
     month = ['Januari',
@@ -314,6 +315,11 @@ def delete_movie(current_user, movie_id):
 
     return jsonify({'message': 'Movie item deleted!'})
 
+# This route generates HTML of documentation
+@app.route('/doc')
+def documentation():
+    return auto.html(title='Movie API App',
+                     author='Reza Yogaswara',)
 
 if __name__ == '__main__':
     app.run(debug=True)
