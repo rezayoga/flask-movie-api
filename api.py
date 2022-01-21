@@ -351,7 +351,7 @@ class Movie(db.Model):
 
 @app.route('/documentation')
 def documentation():
-    return auto.html(title='Movie App REST API Reference - Author: Reza Yogaswara',
+    return auto.html(title='Movie App REST API Reference',
                      author='Reza Yogaswara')
     # return Response(str(auto.generate()), mimetype='application/json')
 
