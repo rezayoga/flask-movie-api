@@ -119,7 +119,7 @@ def get_one_user(current_user, public_id):
 
 @app.route('/user', methods=['POST'])
 @auto.doc()
-def create_user(current_user):
+def create_user():
     """POST new User"""
     data = request.get_json()
 
