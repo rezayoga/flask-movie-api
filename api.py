@@ -307,7 +307,7 @@ class User(db.Model):
     password = db.Column(db.String(256), nullable=False)
     fullname = db.Column(db.String(128), nullable=False)
     created_at = db.Column(db.String(24), nullable=False)
-    movie = db.relationship('Movie', backref='user', lazy=True)
+    movie = db.relationship('Movie', backref='user', lazy=True, cascade="all, delete-orphan")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
