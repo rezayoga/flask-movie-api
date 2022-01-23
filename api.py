@@ -82,8 +82,12 @@ def signin():
 # GET User list
 @app.route('/user', methods=['GET'])
 @auto.doc()
+
+# Default this
 # @token_required
-def get_all_users(current_user):
+# def get_all_users(current_user):
+
+def get_all_users():
     """GET User list"""
     users = User.query.all()
 
