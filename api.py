@@ -57,7 +57,7 @@ def index():
 @app.route('/auth/signin')
 @auto.doc()
 def signin():
-    """Authentication"""
+    """User authentication (user signin)"""
     auth = request.authorization
 
     if not auth or not auth.username or not auth.password:
@@ -120,7 +120,7 @@ def get_one_user(current_user, public_id):
 @app.route('/auth/signup', methods=['POST'])
 @auto.doc()
 def signup():
-    """POST new User"""
+    """User signup"""
     data = request.get_json()
 
     hashed_password = generate_password_hash(data['password'], method='sha256')
