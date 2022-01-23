@@ -54,9 +54,9 @@ def index():
     return redirect(url_for('documentation'))
 
 
-@app.route('/login')
+@app.route('/auth/signin')
 @auto.doc()
-def login():
+def signin():
     """Authentication"""
     auth = request.authorization
 
@@ -117,9 +117,9 @@ def get_one_user(current_user, public_id):
     return jsonify({'user': user_data})
 
 
-@app.route('/user', methods=['POST'])
+@app.route('/auth/signup', methods=['POST'])
 @auto.doc()
-def create_user():
+def signup():
     """POST new User"""
     data = request.get_json()
 
