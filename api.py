@@ -21,7 +21,7 @@ Base URL: http://movieapi.rezayogaswara.com
 app = Flask(__name__)
 app.config.from_object(Config)
 
-cors = CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 db = SQLAlchemy(app)
 
