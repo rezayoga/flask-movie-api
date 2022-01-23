@@ -28,7 +28,6 @@ db = SQLAlchemy(app)
 load_dotenv('./.flaskenv')
 auto = Autodoc(app)
 
-
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
