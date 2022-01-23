@@ -10,15 +10,19 @@ from dataclasses import dataclass
 from config import Config
 import time
 from flask_autodoc.autodoc import Autodoc
+from flask_cors import CORS
 
 """flask Movie App REST API with JWT
 
 Author: Reza Yogaswara - https://me.rezayogaswara.com
-Endpoint: http://movieapi.rezayogaswara.com
+Base URL: http://movieapi.rezayogaswara.com
 """
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
+
 db = SQLAlchemy(app)
 
 load_dotenv('./.flaskenv')
