@@ -121,7 +121,27 @@ def get_one_user(current_user, public_id):
     user_data['fullname'] = user.fullname
     user_data['created_at'] = user.created_at
 
-    return jsonify({'user': user_data})
+    return jsonify(user_data)
+
+
+@app.route('/auth/me', methods=['GET'])
+@auto.doc()
+@token_required
+def get_me(current_user):
+    """GET User by token"""
+    
+    if not current_user:
+        return jsonify({'message': 'Invalid request!'})
+
+    user_data = {}
+    user_data['id'] = current_user.id
+    user_data['public_id'] = current_user.public_id
+    user_data['username'] = current_user.username
+    user_data['password'] = current_user.password
+    user_data['fullname'] = current_user.fullname
+    user_data['created_at'] = current_user.created_at
+
+    return jsonify(user_data)
 
 
 @app.route('/auth/signup', methods=['POST'])
