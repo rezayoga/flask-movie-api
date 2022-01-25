@@ -286,7 +286,7 @@ def update_movie(current_user, movie_id):
     movie.billboard = data['billboard']
     db.session.commit()
 
-    return jsonify({'message': 'Movie item has been completed!'})
+    return jsonify({'message': 'Movie has been updated!'})
 
 
 @app.route('/movie/<movie_id>', methods=['DELETE'])
@@ -302,7 +302,7 @@ def delete_movie(current_user, movie_id):
     db.session.delete(movie)
     db.session.commit()
 
-    return jsonify({'message': 'Movie item deleted!'})
+    return jsonify({'message': 'Movie deleted!'})
 
 
 def getCurrentDate(withTime=False):
