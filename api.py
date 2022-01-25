@@ -236,7 +236,7 @@ def get_all_movies(current_user):
 def get_all_movies_paginated(current_user, start=None, limit=None):
     """GET Movie list paginated"""
     movies = Movie.query.filter_by(
-        user_id=current_user.id).order_by(Movie.id.desc()).paginate(start, limit, error_out=False)
+        user_id=current_user.id).order_by(Movie.id.desc()).paginate(start, limit, error_out=False).items
 
     output = []
 
