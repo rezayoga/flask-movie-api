@@ -96,7 +96,7 @@ def signout(current_user):
 @auto.doc()
 def get_all_users():
     """GET User list"""
-    users = User.query.all()
+    users = User.query.order_by(User.id.desc()).all()
 
     output = []
 
@@ -208,7 +208,7 @@ def delete_user(current_user, public_id):
 @token_required
 def get_all_movies(current_user):
     """GET Movie list"""
-    movies = Movie.query.filter_by(user_id=current_user.id).all()
+    movies = Movie.query.filter_by(user_id=current_user.id).order_by(Movie.id.desc()).all()
 
     output = []
 
