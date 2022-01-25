@@ -28,6 +28,7 @@ db = SQLAlchemy(app)
 load_dotenv('./.flaskenv')
 auto = Autodoc(app)
 
+
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -82,10 +83,10 @@ def signin():
 @auto.doc()
 @token_required
 def signout(current_user):
-	current_user = None
-	token = None
+    current_user = None
+    token = None
 
-	return jsonify({'token': token})
+    return jsonify({'token': token})
 
 
 # Default this
@@ -137,7 +138,7 @@ def get_one_user(current_user, public_id):
 @token_required
 def get_me(current_user):
     """GET User by token"""
-    
+
     if not current_user:
         return jsonify({'message': 'Invalid request!'})
 
@@ -207,8 +208,35 @@ def delete_user(current_user, public_id):
 @auto.doc()
 @token_required
 def get_all_movies(current_user):
-    """GET Movie list"""
-    movies = Movie.query.filter_by(user_id=current_user.id).order_by(Movie.id.desc()).all()
+    """GET Movie list all"""
+    movies = Movie.query.filter_by(
+        user_id=current_user.id).order_by(Movie.id.desc()).all()
+
+    output = []
+
+    for movie in movies:
+        movie_data = {}
+        movie_data['id'] = movie.id
+        movie_data['user_id'] = movie.user_id
+        movie_data['genre'] = movie.genre
+        movie_data['title'] = movie.title
+        movie_data['directors'] = movie.directors
+        movie_data['actors'] = movie.actors
+        movie_data['year'] = movie.year
+        movie_data['billboard'] = movie.billboard
+        movie_data['created_at'] = movie.created_at
+        output.append(movie_data)
+
+    return jsonify({'movies': output})
+
+
+@app.route('/movie/<int:start>/<int:limit>', methods=['GET'])
+@auto.doc()
+@token_required
+def get_all_movies_paginated(current_user, start=None, limit=None):
+    """GET Movie list paginated"""
+    movies = Movie.query.filter_by(
+        user_id=current_user.id).order_by(Movie.id.desc()).offset(start).limit(limit)
 
     output = []
 
@@ -342,7 +370,8 @@ class User(db.Model):
     password = db.Column(db.String(256), nullable=False)
     fullname = db.Column(db.String(128), nullable=False)
     created_at = db.Column(db.String(24), nullable=False)
-    movie = db.relationship('Movie', backref='user', lazy=True, cascade="all, delete-orphan")
+    movie = db.relationship('Movie', backref='user',
+                            lazy=True, cascade="all, delete-orphan")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
