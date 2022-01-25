@@ -136,7 +136,7 @@ def get_one_user(current_user, public_id):
 @token_required
 def get_me(current_user):
     """GET User by token"""
-    
+
     if not current_user:
         return jsonify({'message': 'Invalid request!'})
 
