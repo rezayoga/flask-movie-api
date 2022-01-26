@@ -1,4 +1,5 @@
-from flask import Flask, request, jsonify, make_response, redirect, url_for
+from sqlite3 import DataError
+from flask import Flask, request, jsonify, make_response, redirect, url_for, abort
 from flask_sqlalchemy import SQLAlchemy
 import uuid
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -11,6 +12,8 @@ from config import Config
 import time
 from flask_autodoc.autodoc import Autodoc
 from flask_cors import CORS
+import os
+from werkzeug.utils import secure_filename
 
 """flask Movie App REST API with JWT
 
@@ -285,14 +288,31 @@ def get_one_movie(current_user, movie_id):
 @token_required
 def create_movie(current_user):
     """POST new Movie"""
+
+    """
     data = request.get_json()
+    """
+
+    billboard_to_save = ""
+    data = request.form.to_dict()
+    uploaded_file = request.files['billboard']
+    filename = secure_filename(uploaded_file.filename)
+    if filename != '':
+        file_ext = os.path.splitext(filename)[1]
+        if file_ext not in app.config['UPLOAD_EXTENSIONS']:
+            # abort(400)
+            billboard_to_save = ""
+
+        billboard_to_save = str(uuid.uuid4()) + '_' + filename
+        uploaded_file.save(os.path.join(
+            app.config['UPLOAD_PATH'], billboard_to_save))
 
     new_movie = Movie(user_id=current_user.id, genre=data['genre'], title=data['title'], directors=data['directors'],
-                      actors=data['actors'], year=data['year'], billboard=data['billboard'], created_at=getCurrentDate(True))
+                      actors=data['actors'], year=data['year'], billboard=billboard_to_save, created_at=getCurrentDate(True))
     db.session.add(new_movie)
     db.session.commit()
 
-    return jsonify({'message': "Movie created!"})
+    return jsonify({'message': 'Movie has been saved!'})
 
 
 @app.route('/movie/<movie_id>', methods=['PUT'])
@@ -305,13 +325,28 @@ def update_movie(current_user, movie_id):
     if not movie:
         return jsonify({'message': 'No movie found!'})
 
-    data = request.get_json()
+    data = request.form.to_dict()
+    billboard_to_save = data['billboard_old']
+    if request.files:
+        uploaded_file = request.files['billboard']
+        filename = secure_filename(uploaded_file.filename)
+        if filename != '':
+            file_ext = os.path.splitext(filename)[1]
+            if file_ext not in app.config['UPLOAD_EXTENSIONS']:
+                # abort(400)
+                billboard_to_save = ""
+
+            billboard_to_save = str(uuid.uuid4()) + '_' + filename
+            uploaded_file.save(os.path.join(
+                app.config['UPLOAD_PATH'], billboard_to_save))
+
+    # data = request.get_json()
     movie.genre = data['genre']
     movie.title = data['title']
     movie.directors = data['directors']
     movie.actors = data['actors']
     movie.year = data['year']
-    movie.billboard = data['billboard']
+    movie.billboard = billboard_to_save
     db.session.commit()
 
     return jsonify({'message': 'Movie has been updated!'})
