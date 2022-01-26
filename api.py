@@ -166,7 +166,7 @@ def signup():
     db.session.add(new_user)
     db.session.commit()
 
-    return jsonify({'message': 'New user created!'})
+    return jsonify({'message': 'Thanks for signing up!'})
 
 
 @app.route('/user/<public_id>', methods=['PUT'])
