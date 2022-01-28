@@ -1,4 +1,3 @@
-from sqlite3 import DataError
 from flask import Flask, request, jsonify, make_response, redirect, url_for, abort
 from flask_sqlalchemy import SQLAlchemy
 import uuid
