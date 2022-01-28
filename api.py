@@ -18,7 +18,7 @@ from werkzeug.utils import secure_filename
 """flask Movie App REST API with JWT
 
 Author: Reza Yogaswara - https://me.rezayogaswara.com
-Base URL: http://movieapi.rezayogaswara.com
+Base URL: https://movieapi.rezayogaswara.com
 """
 
 app = Flask(__name__)
